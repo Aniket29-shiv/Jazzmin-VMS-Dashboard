@@ -221,7 +221,7 @@
                     <!-- Dropdown - Alerts -->
                     <div id="dropdown" onclick="dropdown_func(event);" class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                         aria-labelledby="alertsDropdown">
-                        <h5 class="dropdown-header">Checkout Notifications</h5>
+                        <h5 class="dropdown-header">Notifications</h5>
                         <div id="checkout_notifications"></div>
                         <span id="show_all_notifications" class="dropdown-item text-center small text-gray-500"></span>
                     </div>
@@ -645,7 +645,7 @@
 {% endif %}
 
 {% if request.user.is_maintainer %}
-    <script>
+    <script> 
         const veh_id = window.location.href.split("/")[6];
         const thread = fetch(`/vehicle/comment_thread_status/${veh_id}/`);
         thread.then(response => response.json()).then((data) => {
@@ -654,6 +654,12 @@
                 add_comment.classList.add("disabled");
             }
         })
+        
+        const commentsOfVehicleNumberGroup = document.getElementById("comments_of_vehicle_number-group");
+        const fieldset = commentsOfVehicleNumberGroup.getElementsByTagName("fieldset")[0];
+        let html = fieldset.innerHTML;
+        html = html + `<input id="save_btn" type="submit" value="Save" class="btn btn-outline-success form-control" name="_save">`;
+        fieldset.innerHTML = html;
     </script>
 {% endif %}
 

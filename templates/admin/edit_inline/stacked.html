@@ -1,4 +1,28 @@
 {% load i18n admin_urls static %}
+
+<style>
+    .edit_and_save a {
+        float: right;
+        margin: 10px;
+        cursor: pointer;
+        padding: 3px 5px;
+        border-radius: 0.25rem;
+        color: white !important;
+        transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+
+    .inline-edit {
+        background-color: #dc3545;
+        border: 1px solid #dc3545;
+        
+    }
+
+    .inline-save {
+        background-color: green;
+        border: 1px solid green;
+    }
+</style>
+
 <div class="js-inline-admin-formset inline-group" id="{{ inline_admin_formset.formset.prefix }}-group" data-inline-type="stacked" data-inline-formset="{{ inline_admin_formset.inline_formset_data }}">
     <fieldset class="module {{ inline_admin_formset.classes }} card card-outline">
         <div class="card-body">
@@ -6,10 +30,14 @@
             {{ inline_admin_formset.formset.non_form_errors }}
 
             {% for inline_admin_form in inline_admin_formset %}
-                <div class="panel inline-related{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last and inline_admin_formset.has_add_permission %} empty-form last-related{% endif %}"
-                     id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
+                <div class="panel inline-related{% if inline_admin_form.original or inline_admin_form.show_url %} has_original{% endif %}{% if forloop.last and inline_admin_formset.has_add_permission %} empty-form last-related{% endif %}" id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
                     <div class="card card-outline {% if not inline_admin_form.original %}new-stacked card-success{% else %}card-secondary{% endif %}">
-                        <div class="card-header">
+                        <div id="{{ inline_admin_form.original.pk }}" class="card-header">
+                            {% if inline_admin_form.original.member == request.user %}
+                            <div class="edit_and_save" id="edit_and_save_{{ inline_admin_form.original.pk }}">    
+                                <a onclick="Edit(event, {{ inline_admin_form.original.pk }}, '{{ inline_admin_form.original.comment }}', '{{ inline_admin_form.original.vehicle_status }}');" class="inline-edit">Edit</a>
+                            </div>
+                            {% endif %}
                             <h3 class="card-title">
                                 <span class="card-tools text-sm">
                                 {% if inline_admin_form.original %}
@@ -56,3 +84,132 @@
         </div>
     </fieldset>
 </div>
+
+<script>
+    const member_id = "{{ request.user.id }}"
+    const member_email = "{{ request.user.email }}"
+
+    const Edit = (event, comment_id, comment, vehicle_status) => {
+        event.preventDefault();
+
+        const card_header = document.getElementById(comment_id);
+        const card_body = card_header.nextElementSibling;
+
+        card_body.innerHTML = `<div class="form-group field-comment">
+                                    <div class="row">
+                                        <label class="col-sm-2 text-left" for="comment_${comment_id}">
+                                            Comment
+                                            <span class="text-red">* </span>
+                                        </label>
+                                        <div class="col-sm-10 field-comment"> 
+                                            <div class="readonly"><input id="comment_${comment_id}" type="text" class="vTextField" maxlength="1000" value='${comment}'></div>
+                                            <div class="help-block red"></div>
+                                            <div class="help-block text-red"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group field-member">
+                                    <div class="row">
+                                        <label class="col-sm-2 text-left" for="id_member">
+                                            Member
+                                        </label>
+                                        <div class="col-sm-10 field-member">
+                                            <div class="readonly"><a href="/admin/Vehicle/member/${member_id}/change/">${member_email}</a></div>
+                                            <div class="help-block red"></div>
+                                            <div class="help-block text-red"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group field-vehicle_status">
+                                    <div class="row">
+                                        <label class="col-sm-2 text-left" for="vehicle_status_${comment_id}">
+                                            Vehicle status
+                                            <span class="text-red">* </span>
+                                        </label>
+                                        <div class="col-sm-10 field-vehicle_status">
+                                            <select id="vehicle_status_${comment_id}" class="form-control" value=${vehicle_status}>
+                                                <option value="SER">SER</option>
+                                                <option value="R1">R1</option>
+                                                <option value="R2">R2</option>
+                                                <option value="VOR">VOR</option>
+                                                <option value="Class V">Class V</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>                                    
+                              `
+
+        const edit_and_save = document.getElementById(`edit_and_save_${comment_id}`);
+        edit_and_save.innerHTML = `<a onclick="Save(event, ${comment_id});" class="inline-save">Save</a>`;
+    }
+
+    const Save = async (event, comment_id) => {
+        event.preventDefault();
+
+        const card_header = document.getElementById(comment_id);
+        const card_body = card_header.nextElementSibling;
+
+        const comment = document.getElementById(`comment_${comment_id}`).value;
+        const vehicle_status = document.getElementById(`vehicle_status_${comment_id}`).value;
+
+        card_body.innerHTML = `<div class="form-group field-comment">
+                                    <div class="row">
+                                        <label class="col-sm-2 text-left" for="id_comment">
+                                            Comment
+                                        </label>
+                                        <div class="col-sm-10 field-comment"> 
+                                            <div class="readonly">${comment}</div>
+                                            <div class="help-block red"></div>
+                                            <div class="help-block text-red"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group field-member">
+                                    <div class="row">
+                                        <label class="col-sm-2 text-left" for="id_member">
+                                            Member
+                                        </label>
+                                        <div class="col-sm-10 field-member">
+                                            <div class="readonly"><a href="/admin/Vehicle/member/${member_id}/change/">${member_email}</a></div>
+                                            <div class="help-block red"></div>
+                                            <div class="help-block text-red"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group field-vehicle_status">
+                                    <div class="row">
+                                        <label class="col-sm-2 text-left" for="id_vehicle_status">
+                                            Vehicle status
+                                        </label>
+
+                                        <div class="col-sm-10 field-vehicle_status">
+                                            <div class="readonly">${vehicle_status}</div>
+                                            <div class="help-block red"></div>
+                                            <div class="help-block text-red"></div>
+                                        </div>
+                                    </div>
+                                </div>            
+                              `
+
+        const edit_and_save = document.getElementById(`edit_and_save_${comment_id}`);
+        edit_and_save.innerHTML = `<a onclick="Edit(event, ${comment_id}, '${comment}', '${vehicle_status}');" class="inline-edit">Edit</a>`;
+                    
+        const response = await fetch("/vehicle/comment/change/", {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                "X-CSRFToken": csrftoken,
+            },
+            body: JSON.stringify({
+                comment_id: comment_id,
+                comment: comment,
+                vehicle_status: vehicle_status,
+            }),
+        }); 
+    }
+</script>
