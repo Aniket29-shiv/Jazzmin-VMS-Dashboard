@@ -19,8 +19,8 @@
     {% if dashboard_list %}
         {% widthratio dashboard_list|length 2 1 as middle %}
     {% endif %}
-
-    <div class="col-lg-9 col-12">
+    <!-- <div id="chartContainer" style="height: 370px; width: 50%;"></div> -->
+    <div class="col-lg-6 col-12">
         
         <div class="column">
             <div class="col-md-6 col-sm-12">
@@ -66,10 +66,18 @@
                 {% endfor %}
                 </div>
         </div>
+       
+
     </div>
-    {% comment %} <div class="col-md-6 col-6">
+    
+    <!-- {% comment %} <div class="col-md-6 col-6">
         <p>Testing</p>
-    </div> {% endcomment %}
+    </div> {% endcomment %} -->
+    <div class="col-lg-3 col-12">
+        
+                    <div id="chartContainer" style="height: 370px; width: 80%;"></div>
+       
+    </div>
     <div class="col-lg-3 col-12">
         <div id="content-related">
             <div class="module" id="recent-actions-module">
