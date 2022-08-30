@@ -434,49 +434,51 @@
 
 <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 <script>
-    a=75;
-    b=20;
-    c=5;
+    a = 75;
+    b = 20;
+    c = 5;
     const fetch_category = async () => {
         const res = await fetch(`../vehicle/StatusCount`);
         const category = (await res.json());
-        a=(category.Complete);
-        b=(category.Near_due);
-        c=(category.Lapse);
-       
+        a = (category.Complete);
+        b = (category.Near_due);
+        c = (category.Lapse);
+    
         console.log(a)
         console.log(b);
         console.log(c);
     }
- 
+    
     window.onload = function () {
+        fetch_category()
+ 
 
-fetch_category()
-console.log(a);
-var chart = new CanvasJS.Chart("chartContainer", {
-	animationEnabled: true,
-	theme: "light2", // "light1", "light2", "dark1", "dark2"
-	title:{
-		text: "VMS Graphics"
-	},
-	axisY: {
-		title: "Number of Vehicles"
-	},
-	data: [{        
-		type: "column",  
-		showInLegend: true, 
-		legendMarkerColor: "grey",
-		legendText: "MMbbl = one million barrels",
-		dataPoints: [      
-			{ y: a, label: "Complete" },
-			{ y: b,  label: "Near_due" },
-			{ y: c,  label: "Lapse" },
-			
-		]
-	}]
-});
-chart.render();
-
+setTimeout(() => {
+    var chart = new CanvasJS.Chart("chartContainer", {
+        animationEnabled: true,
+        theme: "light2", // "light1", "light2", "dark1", "dark2"
+        title:{
+            text: "VMS Graphics"
+        },
+        axisY: {
+            title: "Number of Vehicles"
+        },
+        data: [{        
+            type: "column",  
+            showInLegend: true, 
+            legendMarkerColor: "grey",
+            legendText: "",
+            dataPoints: [      
+                { y: a, label: "Complete" },
+                { y: b,  label: "Near_due" },
+                { y: c,  label: "Lapse" },
+                
+            ]
+        }]
+    });
+    chart.render();
+    console.log("In chart "+a);
+}, 2000);
 }
     
     
