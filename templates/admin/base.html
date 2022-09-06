@@ -1,0 +1,824 @@
+{% load i18n static jazzmin admin_urls %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+{% get_jazzmin_settings request as jazzmin_settings %}
+{% get_jazzmin_ui_tweaks as jazzmin_ui %}
+
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <!--  Prevent admin panel being crawled by search engines -->
+    <meta name="robots" content="none, noarchive">
+
+    <title>{% block title %}{{ title }} | {{ jazzmin_settings.site_title }}{% endblock %}</title>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="{% static "vendor/fontawesome-free/css/all.min.css" %}">
+
+    <!-- Bootstrap and adminLTE -->
+    <link rel="stylesheet" href="{% static "vendor/adminlte/css/adminlte.min.css" %}" id="adminlte-css">
+
+    <!-- Bootswatch theme -->
+    {% if jazzmin_ui.theme.name != 'default' %}
+        <link rel="stylesheet" href="{{ jazzmin_ui.theme.src }}" id="jazzmin-theme" />
+    {% endif %}
+
+    {% if jazzmin_ui.dark_mode_theme %}
+        <link rel="stylesheet" href="{{ jazzmin_ui.dark_mode_theme.src }}" id="jazzmin-dark-mode-theme" media="(prefers-color-scheme: dark)"/>
+    {% endif %}
+
+    <!-- Custom fixes for django -->
+    <link rel="stylesheet" href="{% static "jazzmin/css/main.css" %}">
+
+    {% if jazzmin_settings.custom_css %}
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static jazzmin_settings.custom_css %}">
+    {% endif %}
+
+    <!-- favicons -->
+    <link rel="shortcut icon" href="{% static jazzmin_settings.site_icon %}" type="image/png">
+    <link rel="icon" href="{% static jazzmin_settings.site_icon %}" sizes="32x32" type="image/png">
+
+    {% if jazzmin_settings.use_google_fonts_cdn %}
+    <!-- Google Font: Source Sans Pro -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    {% endif %}
+
+    {% block extrastyle %} 
+        <style>
+            #close_thread:hover {
+                background-color: #dc3545 !important;
+                color: white !important;
+            }
+
+            #start_thread:hover {
+                background-color: #28a745 !important;
+                color: white !important;
+            }
+
+            .notification_div {
+                font-size: 85%;
+            }
+
+            .dropdown-header {
+                font-size: 115%;
+            }
+
+            .dropdown-list {
+                max-height: 26em;
+                overflow-y: scroll;
+            }
+
+            .dropdown-list::-webkit-scrollbar {
+                width: 5px;
+            }
+        
+            .dropdown-list::-webkit-scrollbar-track {
+                background-color: #ececec;
+                border-radius: 5px;
+            }
+        
+            .dropdown-list::-webkit-scrollbar-thumb {
+                background-color: rgba(119, 119, 119, 0.3);
+                border-radius: 5px;
+            }
+
+            .view-btn {
+                display: inline-block;
+                margin-right: 10px;
+                color: rgb(33, 146, 33);
+                cursor: pointer;
+                font-size: 1em;
+            }
+
+            .markasread-btn {
+                display: inline-block;
+                margin-left: 10px;
+                color: rgb(0, 123, 255);
+                cursor: pointer;
+                font-size: 1em;
+            }
+        </style>
+
+        {% if request.user.is_boss %}
+          <style>
+                a.inline-deletelink {
+                    display: none !important;
+                }
+          </style>
+        {% endif %}
+    {% endblock %}
+    {% block extrahead %} {% endblock %}
+</head>
+<body class="hold-transition{% if not jazzmin_settings.show_sidebar %} no-sidebar{% else %} sidebar-mini{% endif %} {% sidebar_status request %} {% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %} {{ jazzmin_ui.body_classes }}" data-admin-utc-offset="{% now "Z" %}">
+
+<div class="wrapper">
+
+    {% if not is_popup %}
+        <nav class="main-header navbar navbar-expand {{ jazzmin_ui.navbar_classes }}" id="jazzy-navbar">
+            <ul class="navbar-nav">
+
+                {% if jazzmin_settings.show_sidebar %}
+                    <li class="nav-item">
+                        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a href="{% url 'admin:index' %}" class="brand-link">
+                            <img src="{% static jazzmin_settings.site_logo %}" alt="{{ jazzmin_settings.site_header }} Logo" class="{{ jazzmin_settings.site_logo_classes }} brand-image" style="opacity: .8; margin: 0 0 0 5px;">
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% get_top_menu user request.current_app|default:"admin" as top_menu %}
+                {% for link in top_menu %}
+                    <li class="nav-item d-none d-sm-inline-block{% if link.children %} dropdown{% endif %}">
+                        {% if link.children %}
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{ link.name }}
+                            </a>
+                            <div class="dropdown-menu">
+                                {% for child in link.children %}
+                                    <a class="dropdown-item" href="{{ child.url }}" {% if link.new_window %}target="_blank"{% endif %}>{{ child.name }}</a>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <a href="{{ link.url }}" class="nav-link" {% if link.new_window %}target="_blank"{% endif %}>{{ link.name }}</a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+
+            {% if jazzmin_settings.search_model %}
+                <form action="{{ jazzmin_settings.search_url }}" method="GET" class="form-inline ml-3">
+                    <div class="input-group input-group-sm">
+                        <input class="form-control form-control-navbar" name="q" type="search" placeholder="{% trans 'Search' %} {{ jazzmin_settings.search_name }}..." aria-label="{% trans 'Search' %} {{ jazzmin_settings.search_name }}...">
+                        <div class="input-group-append">
+                            <button class="btn btn-navbar" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            {% endif %}
+
+            <ul class="navbar-nav ml-auto">
+
+                {% if jazzmin_settings.show_ui_builder %}
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
+                        <i class="fas fa-th-large"></i>
+                    </a>
+                </li>
+                {% endif %}
+                {% if 'django.contrib.admindocs'|app_is_installed %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'django-admindocs-docroot' %}" role="button">
+                        <i class="fas fa-book"></i>
+                    </a>
+                </li>
+                {% endif %}
+
+                {% if jazzmin_settings.language_chooser %}
+                    {% get_available_languages as LANGUAGES %}
+                    {% get_language_info_list for LANGUAGES as languages %}
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link btn" data-toggle="dropdown" href="#" title="Choose language">
+                            <i class="fas fa-globe" aria-hidden="true"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-left" id="jazzy-languagemenu">
+                            <form action="{% url 'set_language' %}" method="post">
+                                {% csrf_token %}
+                                <input name="next" type="hidden" value="{{ request.get_full_path|remove_lang:LANGUAGE_CODE }}" />
+                                {% for language in languages %}
+                                    <button
+                                        type="submit"
+                                        name="language"
+                                        value="{{ language.code }}"
+                                        class="dropdown-item {% if language.code == LANGUAGE_CODE %}active{% endif %}"
+                                        lang="{{ language.code }}"
+                                    >
+                                        {{ language.name_local|title }}
+                                    </button>
+                                {% endfor %}
+                            </form>
+                        </div>
+                    </li>
+                {% endif %}
+
+                <li class="nav-item dropdown no-arrow mx-1">
+                    <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-bell fa-fw"></i>
+                        <!-- Counter - Alerts -->
+                        <span id="checkout_notifications_count"
+                            class="badge badge-danger badge-counter">0</span>
+                    </a>
+                    <!-- Dropdown - Alerts -->
+                    <div id="dropdown" onclick="dropdown_func(event);" class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                        aria-labelledby="alertsDropdown">
+                        <h5 class="dropdown-header">Notifications</h5>
+                        <div id="checkout_notifications"></div>
+                        <span id="show_all_notifications" class="dropdown-item text-center small text-gray-500"></span>
+                    </div>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link btn" data-toggle="dropdown" href="#" title="{{ request.user }}">
+                        <i class="far fa-user" aria-hidden="true"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-left" id="jazzy-usermenu">
+                        <span class="dropdown-header">{% trans 'Account' %}</span>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'admin:password_change' %}" class="dropdown-item">
+                            <i class="fas fa-key mr-2"></i> {% trans 'Change password' %}
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'admin:logout' %}" class="dropdown-item">
+                            <i class="fas fa-users mr-2"></i> {% trans 'Log out' %}
+                        </a>
+                        {% get_user_menu user request.current_app|default:"admin" as user_menu %}
+                        {% for link in user_menu %}
+                            <div class="dropdown-divider"></div>
+                            <a href="{{ link.url }}" class="dropdown-item" {% if link.new_window %}target="_blank"{% endif %}>
+                                <i class="{{ link.icon }} mr-2"></i> {% trans link.name %}
+                            </a>
+                        {% endfor %}
+                        <div class="dropdown-divider"></div>
+                        {% if perms|can_view_self %}
+                            <a href="{% jazzy_admin_url request.user request.current_app|default:"admin" %}" class="dropdown-item dropdown-footer">{% trans 'See Profile' %}</a>
+                        {% endif %}
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        {% block sidebar %}
+        {% if jazzmin_settings.show_sidebar %}
+            {% get_side_menu as side_menu_list %}
+
+            <aside class="main-sidebar elevation-4 {{ jazzmin_ui.sidebar_classes }}" id="jazzy-sidebar">
+                <a href="{% url 'admin:index' %}" class="brand-link {{ jazzmin_ui.brand_classes }}" id="jazzy-logo">
+                    <img src="{% static jazzmin_settings.site_logo %}" alt="{{ jazzmin_settings.site_header }} Logo" class="{{ jazzmin_settings.site_logo_classes }} brand-image elevation-3" style="opacity: .8">
+                    <span class="brand-text font-weight-light">{{ jazzmin_settings.site_brand }}</span>
+                </a>
+
+                <div class="sidebar">
+                    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                        <div class="image">
+                            {% if jazzmin_settings|has_jazzmin_setting:"user_avatar" %}
+                                <img src="{% get_user_avatar request.user %}" width="160px" class="img-circle elevation-2" alt="User Image">
+                            {% else %}
+                                <i class="fas fa-inverse user-profile fa-user-circle"></i>
+                            {% endif %}
+                        </div>
+                        <div class="info">
+                            {% if perms|can_view_self %}
+                                <a href="{% jazzy_admin_url request.user request.current_app|default:"admin" %}" class="d-block">{{ request.user }}</a>
+                            {% else %}
+                                <span class="d-block" style="color: white;">{{ request.user }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <nav class="mt-2">
+                        <ul class="nav nav-pills nav-sidebar flex-column {{ jazzmin_ui.sidebar_list_classes }}" data-widget="treeview" role="menu" data-collapsible="false">
+
+                            <li class="nav-item">
+                                <a href="{% url 'admin:index' %}" class="nav-link">
+                                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                                    <p>{% trans 'Dashboard' %}</p>
+                                </a>
+                            </li>
+
+                            {% if jazzmin_settings.navigation_expanded %}
+                                {% for app in side_menu_list %}
+                                    <li class="nav-header">{{ app.name }}</li>
+                                    {% for model in app.models %}
+                                        <li class="nav-item">
+                                            {% if model.url %}
+                                            <a href="{{ model.url }}" class="nav-link">
+                                                <i class="nav-icon fas fa-caret-square-right"></i> <p>{{ model.name }}</p>
+                                            </a>
+                                        {% else %}
+                                            <span class="nav-link disabled">
+                                                <i class="nav-icon fas fa-caret-square-right"></i> <p>{{ model.name }}</p>
+                                            </span>
+                                        {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                {% endfor %}
+                            {% else %}
+                                {% for app in side_menu_list %}
+                                    <li class="nav-item has-treeview">
+                                        <a href="#" class="nav-link">
+                                            <i class="nav-icon {{ app.icon }}"></i>
+                                            <p>{{ app.name|truncatechars:21 }} <i class="fas fa-angle-left right"></i></p>
+                                        </a>
+                                        <ul class="nav nav-treeview" style="display: none;">
+                                            {% for model in app.models %}
+                                                <li class="nav-item">
+                                                    <a href="{% if model.url %}{{ model.url }}{% else %}javascript:void(0){% endif %}" class="nav-link">
+                                                        <i class="nav-icon fas fa-caret-square-right"></i>
+                                                        <p>{{ model.name }}</p>
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </aside>
+        {% endif %}
+        {% endblock %}
+    {% endif %}
+
+    <div class="content-wrapper" {% if is_popup %}style="margin-left:0px; padding-top: 20px;"{% endif %}>
+        {% block page_content %}
+            {% if not is_popup %}
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-auto col-sm-3">
+                            <h1 class="m-0">{% block content_title %}{% endblock %}</h1>
+                        </div>
+                        <div class="col-auto col-sm-9">
+                            {% block breadcrumbs %}{% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="content">
+                <div class="container-fluid">
+                    <section id="content" class="content">
+                        {% block messages %}
+                            {% for message in messages %}
+                                {% if message.tags == 'success' %}
+                                    <div class="alert alert-success alert-dismissible">
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×
+                                        </button>
+                                        <i class="icon fa fa-check"></i>{{ message|capfirst }}
+                                    </div>
+                                {% elif message.tags == 'error' %}
+                                    <div class="alert alert-danger alert-dismissible">
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×
+                                        </button>
+                                        <i class="icon fa fa-ban"></i>{{ message|capfirst }}
+                                    </div>
+                                {% elif message.tags == 'warning' %}
+                                    <div class="alert alert-warning alert-dismissible">
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×
+                                        </button>
+                                        <i class="icon fa fa-exclamation-triangle"></i>{{ message|capfirst }}
+                                    </div>
+                                {% elif message.tags == 'info' %}
+                                    <div class="alert alert-info alert-dismissible">
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×
+                                        </button>
+                                        <i class="icon fa fa-info"></i>{{ message|capfirst }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endblock messages %}
+                        <div class="row">
+                            <!-- <div id="chartContainer" style="height: 370px; width: 50%;"></div> -->
+                            {% block content %} {% endblock %}
+                        </div>
+                        
+                            
+                       
+                    </section>
+                </div>
+            </div>
+        {% endblock %}
+    </div>
+</div>
+
+{% if jazzmin_settings.show_ui_builder %}
+<div id="codeBox" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">{% trans 'UI Configuration' %}</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>{% trans 'Copy this info your settings file to persist these UI changes' %}</p>
+                <pre><code></code></pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn {{ jazzmin_ui.button_classes.danger }}" data-dismiss="modal">{% trans 'Close' %}</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endif %}
+
+<!-- jQuery -->
+<script src="{% static "admin/js/vendor/jquery/jquery.js" %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static "vendor/bootstrap/js/bootstrap.min.js" %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static "vendor/adminlte/js/adminlte.min.js" %}"></script>
+<!-- Django customisations -->
+<script src="{% static "jazzmin/js/main.js" %}"></script>
+
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script>
+    a = 75;
+    b = 20;
+    c = 5;
+    const fetch_category = async () => {
+        const res = await fetch(`../vehicle/StatusCount`);
+        const category = (await res.json());
+        a = (category.Complete);
+        b = (category.Near_due);
+        c = (category.Lapse);
+    
+        console.log(a)
+        console.log(b);
+        console.log(c);
+    }
+    
+    window.onload = function () {
+        fetch_category()
+ 
+
+setTimeout(() => {
+    var chart = new CanvasJS.Chart("chartContainer", {
+        animationEnabled: true,
+        theme: "light2", // "light1", "light2", "dark1", "dark2"
+        title:{
+            text: "VMS Graphics"
+        },
+        axisY: {
+            title: "Number of Vehicles"
+        },
+        data: [{        
+            type: "column",  
+            showInLegend: true, 
+            legendMarkerColor: "grey",
+            legendText: "",
+            dataPoints: [      
+                { y: a, label: "Complete" },
+                { y: b,  label: "Near_due" },
+                { y: c,  label: "Lapse" },
+                
+            ]
+        }]
+    });
+    chart.render();
+    console.log("In chart "+a);
+}, 2000);
+}
+    
+    
+    
+  </script>
+
+{% if jazzmin_settings.custom_js %}
+<script src="{% static jazzmin_settings.custom_js %}"></script>
+{% endif %}
+
+{% if jazzmin_settings.show_ui_builder %}
+<script>
+    window.ui_changes = {{ jazzmin_ui.raw|as_json|safe }};
+</script>
+<script src="{% static "jazzmin/js/ui-builder.js" %}"></script>
+{% endif %}
+
+{% block extrajs %}{% endblock %}
+
+{% if request.user.is_boss %}
+    <script>
+        const vehicle = window.location.href.split("/")[5];
+
+        if (vehicle === "vehicle") {        
+            const vehicle_id = window.location.href.split("/")[6];
+            const tab = window.location.href.split("/")[8];
+            const csrftoken = "{{ csrf_token }}";
+            const jazzy_actions = document.getElementById("jazzy-actions");
+            const form_group = jazzy_actions.getElementsByClassName("form-group")[0];
+            const card_body = document.getElementsByClassName("card-body")[0];
+            card_body_innerhtml = card_body.innerHTML;
+            card_body_innerhtml += `<div class="add-row"><span id="add_another_comment" class="btn btn-sm btn-default float-right">Save Comment</span></div>`;
+            card_body.innerHTML = card_body_innerhtml;
+            const add_another_comment = document.getElementById("add_another_comment");
+            const comments_of_vehicle_number_empty = document.getElementById("comments_of_vehicle_number-empty");
+
+            const response = fetch(`/vehicle/comment_thread_status/${vehicle_id}/`);
+            response.then(response => response.json()).then((data) => {
+                let form_group_innerhtml = form_group.innerHTML;
+                if (data.thread_status) {
+                    form_group_innerhtml += `<div id="thread_div">
+                                                <span style="background-color: white;color: green;" id="start_thread" class="btn btn-outline-success form-control active mt-2">Start Thread</span>
+                                                <span style="background-color: white;color: red;" id="close_thread" class="btn btn-outline-danger form-control active mt-2 disabled">Close Thread</span>
+                                            </div>`
+                    add_another_comment.classList.add("disabled");
+                    comments_of_vehicle_number_empty.classList.add("d-none");
+                } else {
+                    form_group_innerhtml += `<div id="thread_div">
+                                                <span style="background-color: white;color: green;" id="start_thread" class="btn btn-outline-success form-control active mt-2 disabled">Start Thread</span>
+                                                <span style="background-color: white;color: red;" id="close_thread" class="btn btn-outline-danger form-control active mt-2">Close Thread</span>
+                                            </div>`
+                    add_another_comment.classList.remove("disabled");
+                    comments_of_vehicle_number_empty.classList.remove("d-none");
+                }
+                form_group.innerHTML = form_group_innerhtml;
+
+                const close_thread = document.getElementById("close_thread");
+                const start_thread = document.getElementById("start_thread");
+
+                const comments_tab = document.getElementById("comments-tab");
+                const nav_items = Array.from(document.getElementById("jazzy-tabs").getElementsByClassName("nav-item"));
+
+                if (tab == "#general-tab" || tab == "") {
+                    add_another_comment.classList.add("d-none");
+                    close_thread.classList.add("d-none");
+                    start_thread.classList.add("d-none");
+                }
+
+                nav_items[0].addEventListener("click", () => {
+                    add_another_comment.classList.add("d-none");
+                    close_thread.classList.add("d-none");
+                    start_thread.classList.add("d-none");
+                })
+
+                nav_items[1].addEventListener("click", () => {
+                    add_another_comment.classList.remove("d-none");
+                    close_thread.classList.remove("d-none");
+                    start_thread.classList.remove("d-none");
+                })
+
+                add_another_comment.addEventListener("click", async () => {
+                    if (add_another_comment.classList.contains("disabled") === false) {
+                        const inputs = comments_of_vehicle_number_empty.getElementsByTagName("input");
+                        const selects = comments_of_vehicle_number_empty.getElementsByTagName("select");
+                        const comment = inputs[0];
+                        const member = selects[0];
+                        const member_email = member.querySelector(`[value="${member.value}"]`).innerHTML;
+                        const vehicle_status = selects[1];
+        
+                        if (comment.value.length == 0 || member.value.length == 0 || vehicle_status.value.length == 0) {
+                            alert("Please Enter Valid Data!");
+                        } else {
+                            const response = await fetch("/vehicle/comment/", {
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json',
+                                    "X-CSRFToken": csrftoken,
+                                },
+                                body: JSON.stringify({
+                                    vehicle_id: vehicle_id, 
+                                    comment: comment.value,
+                                    member: member.value,
+                                    vehicle_status: vehicle_status.value
+                                }),
+                            });
+
+                            const div = document.createElement('div');
+                            div.id = "comments_of_vehicle_number-3";
+                            div.classList.add("panel");
+                            div.classList.add("inline-related");
+                            div.classList.add("has_original");
+                            div.classList.add("dynamic-comments_of_vehicle_number");
+                            div.innerHTML = `
+                                                <div class="card card-outline card-secondary">
+                                                    <div class="card-header">
+                                                        <h3 class="card-title">
+                                                            <span class="card-tools text-sm">
+                                                                ${member_email}
+                                                            </span>
+                                                        </h3>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="form-group field-comment">
+                                                            <div class="row">
+                                                                <label class="col-sm-2 text-left" for="id_comment">Comment</label>
+                                                                <div class="col-sm-10 field-comment">
+                                                                    <div class="readonly">${comment.value}</div>
+                                                                    <div class="help-block red"></div>
+                                                                    <div class="help-block text-red"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                            
+                                                        <div class="form-group field-member">
+                                                            <div class="row">
+                                                                <label class="col-sm-2 text-left" for="id_member">
+                                                                    Member
+                                                                </label>
+                                                                <div class="col-sm-10 field-member">
+                                                                    <div class="readonly"><a href="/admin/Vehicle/member/${member.value}/change/">${member_email}</a></div>
+                                                                    <div class="help-block red"></div>
+                                                                    <div class="help-block text-red"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    
+                                                        <div class="form-group field-vehicle_status">
+                                                            <div class="row">
+                                                                <label class="col-sm-2 text-left" for="id_vehicle_status">
+                                                                    Vehicle status  
+                                                                </label>
+                                                                <div class="col-sm-10 field-vehicle_status">
+                                                                    <div class="readonly">${vehicle_status.value}</div>
+                                                                    <div class="help-block red">  </div>
+                                                                    <div class="help-block text-red"> </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+        
+                                                        <input type="hidden" name="comments_of_vehicle_number-3-id" value="10" id="id_comments_of_vehicle_number-3-id">
+                                                        <input type="hidden" name="comments_of_vehicle_number-3-vehicle" value="4" id="id_comments_of_vehicle_number-3-vehicle">
+                                                    </div>
+                                                </div>
+                                            `;
+                            document.getElementsByTagName("fieldset")[0].getElementsByClassName("card-body")[0].insertBefore(div, comments_of_vehicle_number_empty);
+                            comment.value = "";
+                        }
+                    }
+                })
+
+                const thread_div = document.getElementById("thread_div");
+                close_thread.addEventListener("click", async () => {
+                    if (close_thread.classList.contains("disabled") == false) {
+                        close_thread.classList.add("disabled");
+                        start_thread.classList.remove("disabled");
+        
+                        const response = await fetch("/vehicle/comment_thread/", {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                "X-CSRFToken": csrftoken,
+                            },
+                            body: JSON.stringify({
+                                vehicle_id: vehicle_id, 
+                                thread: true,
+                            }),
+                        });  
+                        add_another_comment.classList.add("disabled"); 
+                        comments_of_vehicle_number_empty.classList.add("d-none");
+                        alert("Thread Closed!");
+                    }                    
+                })
+
+                start_thread.addEventListener("click", async () => {
+                    if (start_thread.classList.contains("disabled") == false) {
+                        start_thread.classList.add("disabled");
+                        close_thread.classList.remove("disabled");
+        
+                        const response = await fetch("/vehicle/comment_thread/", {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                "X-CSRFToken": csrftoken,
+                            },
+                            body: JSON.stringify({
+                                vehicle_id: vehicle_id, 
+                                thread: false,
+                            }),
+                        });   
+                        add_another_comment.classList.remove("disabled"); 
+                        comments_of_vehicle_number_empty.classList.remove("d-none");         
+                        alert("Thread Started!");
+                    }
+                })
+            })
+        }
+    </script>
+{% endif %}
+
+{% if request.user.is_maintainer %}
+    <script> 
+        const veh_id = window.location.href.split("/")[6];
+        const thread = fetch(`/vehicle/comment_thread_status/${veh_id}/`);
+        thread.then(response => response.json()).then((data) => {
+            if (data.thread_status) {
+                const add_comment = document.getElementsByClassName("add-row")[0].getElementsByTagName("a")[0];
+                add_comment.classList.add("disabled");
+            }
+        })
+        
+        const commentsOfVehicleNumberGroup = document.getElementById("comments_of_vehicle_number-group");
+        const fieldset = commentsOfVehicleNumberGroup.getElementsByTagName("fieldset")[0];
+        let html = fieldset.innerHTML;
+        html = html + `<input id="save_btn" type="submit" value="Save" class="btn btn-outline-success form-control" name="_save">`;
+        fieldset.innerHTML = html;
+    </script>
+{% endif %}
+
+{% if not request.user.is_superuser and not request.user.is_boss and not request.user.is_maintainer %}
+  <script>
+        const veh_id_user = window.location.href.split("/")[6];
+        const thread_user = fetch(`/vehicle/comment_thread_status/${veh_id_user}/`);
+        thread_user.then(response => response.json()).then((data) => {
+            console.log(data);
+            if (data.thread_status) {
+                const add_comment = document.getElementsByClassName("add-row")[0].getElementsByTagName("a")[0];
+                add_comment.classList.add("disabled");
+            }
+        })
+  </script>
+{% endif %}
+
+<script>
+    const dropdown_func = (event) => event.stopPropagation();
+
+    const csrftoken = "{{ csrf_token }}";
+    
+    const notification_handler = async (event, notification_id, click) => {
+        const response = await fetch("/vehicle/notifications/", {
+            method: 'PATCH',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                "X-CSRFToken": csrftoken,
+            },
+            body: JSON.stringify({
+                notification_id: notification_id
+            }),
+        });        
+
+        if (click === "View") window.location.href = `/admin/Vehicle/comment/${notification_id}/change/`;
+        else {
+            const dropdown = document.getElementById("dropdown");
+            const dropdown_parent = event.target.parentNode.parentNode.parentNode;
+            dropdown_parent.nextElementSibling.remove(); 
+            dropdown_parent.remove(); 
+            
+            const checkoutNotificationsCount = document.getElementById("checkout_notifications_count");
+            const checkoutNotifications = document.getElementById("checkout_notifications");
+
+            if (checkoutNotifications.innerHTML.trim() === "") {
+                const showAllNotifications = document.getElementById("show_all_notifications");
+                checkoutNotificationsCount.innerHTML = 0;
+                showAllNotifications.innerText = "No Notifications";
+            } else {
+                let html = checkoutNotificationsCount.innerHTML;
+                html = parseInt(html) - 1;
+                checkoutNotificationsCount.innerHTML = html;
+            }
+        }
+    }
+
+    const notifications = async () => {
+        const response = await fetch("/vehicle/notifications/", {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                "X-CSRFToken": csrftoken,
+            },
+            body: {},
+        });  
+        const response_json = await response.json();
+        const notifications_list = response_json.notifications.reverse();
+
+        const checkoutNotifications = document.getElementById("checkout_notifications");
+        let html = "", total = 0;
+        for (let notification of notifications_list) {
+            html += `<div class="dropdown-item d-flex align-items-center">
+                        <div class="mr-3">
+                            <div class="icon-circle bg-primary">
+                                <i class="fas fa-file-alt text-white"></i>
+                            </div>
+                        </div>
+
+                        <div class="notification_main_div">    
+                            <div class="notification_div">${notification.notification} by ${notification.member} for</div>
+                            <div class="notification_div">vehicle ${notification.vehicle} at ${notification.time}</div>
+                            <div class="notification_div">
+                                <span onclick="notification_handler(event, ${notification.notification_id}, 'View');" class="view-btn">View</span>
+                                <span onclick="notification_handler(event, ${notification.notification_id}, 'Mard as read');" class="markasread-btn">Mark as read</span>
+                            </div>
+                        </div>
+                    </div> <hr>`
+            total += 1;
+        }
+        checkoutNotifications.innerHTML = html;
+
+        const checkoutNotificationsCount = document.getElementById("checkout_notifications_count");
+        checkoutNotificationsCount.innerHTML = total;
+
+        const showAllNotifications = document.getElementById("show_all_notifications");
+        if (total === 0) {
+            showAllNotifications.innerText = "No Notifications";
+        }
+    }
+    notifications();
+</script>
+</body>
+</html>
