@@ -46,19 +46,74 @@
     {% block extrastyle %} {% endblock %}
     {% block extrahead %} {% endblock %}
 </head>
+<style>
+  #slider {
+    position: relative;
+    width: 500px;
+    height: 265px;
+   
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+  }
+  #slider ul {
+    position: relative;
+    list-style: none;
+    height: 100%;
+    width: 10000%;
+    padding: 0;
+    margin: 0;
+    transition: all 750ms ease;
+    left: 0;
+  }
+  #slider ul li {
+    position: relative;
+    height: 100%;
+   
+    float: left;
+  }
+  #slider ul li img{
+    width: 500px;
+    height: 265px;
+  }
+   
+  #slider #prev, #slider #next {
+    width: 50px;
+    line-height: 50px;
+    border-radius: 50%;
+    font-size: 2rem;
+    text-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+    text-align: center;
+    color: white;
+    text-decoration: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: all 150ms ease;
+  }
+  #slider #prev:hover, #slider #next:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+    text-shadow: 0;
+  }
+  #slider #prev {
+    left: 10px;
+  }
+  #slider #next {
+    right: 10px;
+  }
+</style>
 <body class="hold-transition jazzmin-login-page">
 
-<div id="slider" style="position: fixed; top: 30px;">
+<div style="position: fixed; top: 30px;">
     <h2><strong>Shivneri Preventive Maintenance System</strong></h2>
 </div>
 
-<div id="slider" style="position: fixed; left: 80px;">
+<div id="slider">
     <ul id="slideWrap"> 
-        {% comment %} <li><img src="https://1.bp.blogspot.com/-GgceYGYr2pk/YPCQp8loxqI/AAAAAAAACXU/Y795AFD-cN8PMV0V2__z2n1B3KFagE8qgCNcBGAsYHQ/s16000/1.jpg" alt=""></li>
+        <li><img src="https://1.bp.blogspot.com/-GgceYGYr2pk/YPCQp8loxqI/AAAAAAAACXU/Y795AFD-cN8PMV0V2__z2n1B3KFagE8qgCNcBGAsYHQ/s16000/1.jpg" alt=""></li>
         <li><img src="https://1.bp.blogspot.com/-pl0VR_xS5Cw/YPCQp1scezI/AAAAAAAACXc/oB9xc6k8RuY5rPksMSy01f3iUn8zSIFzwCNcBGAsYHQ/s16000/2.jpg" alt=""></li>
         <li><img src="https://1.bp.blogspot.com/-dt6CL2fiBq0/YPCQp0zmK6I/AAAAAAAACXY/0PevDL7pvx87mefb4oCnO613N1UitdicQCNcBGAsYHQ/s16000/3.jpg" alt=""></li>
         <li><img src="https://1.bp.blogspot.com/-T_V-s57aVDo/YPCQrWayswI/AAAAAAAACXg/h1ifJGnBuXovvBdGDNvmhg-DXIVK4Xw9QCNcBGAsYHQ/s16000/4.jpg" alt=""></li>
-        <li><img src="https://1.bp.blogspot.com/-TNT1a5M1v3o/YPCQrWmn_fI/AAAAAAAACXk/p8nx_OB2R6Aw172WIv5vuB8jF-qWDsHlwCNcBGAsYHQ/s16000/5.jpg" alt=""></li> {% endcomment %}
+        <li><img src="https://1.bp.blogspot.com/-TNT1a5M1v3o/YPCQrWmn_fI/AAAAAAAACXk/p8nx_OB2R6Aw172WIv5vuB8jF-qWDsHlwCNcBGAsYHQ/s16000/5.jpg" alt=""></li>
     </ul>
     <a id="prev" href="#">&#8810;</a>
     <a id="next" href="#">&#8811;</a>
@@ -138,12 +193,12 @@
         
         setInterval(function() {
           nextSlide()
-        }, 8000);
+        }, 3000);
         
         };
         
         window.onload = function() {
-        responsiveSlider();  
+          responsiveSlider();  
         }
 </script>
 </body>
