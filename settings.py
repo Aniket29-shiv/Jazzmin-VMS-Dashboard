@@ -17,7 +17,7 @@ DEFAULT_SETTINGS: Dict[str, Any] = {
     # Title on the brand (19 chars max) (will default to current_admin_site.site_header)
     "site_brand": "Shivneri VMS",
     # Relative path to logo for your site, used for brand on top left (must be present in static files)
-    "site_logo": "vendor/adminlte/img/army_logo_mini.jpeg",
+    "site_logo": "vendor/adminlte/img/shivneri_logo.jpg",
     # CSS classes that are applied to the logo
     "site_logo_classes": "img-circle",
     # Relative path to a favicon for your site, will default to site_logo if absent (ideally 32x32 px)
