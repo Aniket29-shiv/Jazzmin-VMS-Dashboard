@@ -48,10 +48,10 @@
 </head>
 <style>
   #slider {
-    position: relative;
-    width: 500px;
-    height: 265px;
-   
+    position: fixed;
+    width: 900px;
+    height: 465px;
+    left: 60px;
     overflow: hidden;
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
   }
@@ -72,8 +72,8 @@
     float: left;
   }
   #slider ul li img{
-    width: 500px;
-    height: 265px;
+    width: 900px;
+    height: 465px;
   }
    
   #slider #prev, #slider #next {
@@ -109,11 +109,14 @@
 
 <div id="slider">
     <ul id="slideWrap"> 
-        <li><img src="https://1.bp.blogspot.com/-GgceYGYr2pk/YPCQp8loxqI/AAAAAAAACXU/Y795AFD-cN8PMV0V2__z2n1B3KFagE8qgCNcBGAsYHQ/s16000/1.jpg" alt=""></li>
-        <li><img src="https://1.bp.blogspot.com/-pl0VR_xS5Cw/YPCQp1scezI/AAAAAAAACXc/oB9xc6k8RuY5rPksMSy01f3iUn8zSIFzwCNcBGAsYHQ/s16000/2.jpg" alt=""></li>
-        <li><img src="https://1.bp.blogspot.com/-dt6CL2fiBq0/YPCQp0zmK6I/AAAAAAAACXY/0PevDL7pvx87mefb4oCnO613N1UitdicQCNcBGAsYHQ/s16000/3.jpg" alt=""></li>
-        <li><img src="https://1.bp.blogspot.com/-T_V-s57aVDo/YPCQrWayswI/AAAAAAAACXg/h1ifJGnBuXovvBdGDNvmhg-DXIVK4Xw9QCNcBGAsYHQ/s16000/4.jpg" alt=""></li>
-        <li><img src="https://1.bp.blogspot.com/-TNT1a5M1v3o/YPCQrWmn_fI/AAAAAAAACXk/p8nx_OB2R6Aw172WIv5vuB8jF-qWDsHlwCNcBGAsYHQ/s16000/5.jpg" alt=""></li>
+        <li><img src="{% static jazzmin_settings.carousel_img1 %}" alt=""></li>
+        <li><img src="{% static jazzmin_settings.carousel_img2 %}" alt=""></li>
+        <li><img src="{% static jazzmin_settings.carousel_img3 %}" alt=""></li>
+        <li><img src="{% static jazzmin_settings.carousel_img4 %}" alt=""></li>
+        <li><img src="{% static jazzmin_settings.carousel_img5 %}" alt=""></li>
+        <li><img src="{% static jazzmin_settings.carousel_img6 %}" alt=""></li>
+        <li><img src="{% static jazzmin_settings.carousel_img7 %}" alt=""></li>
+        <li><img src="{% static jazzmin_settings.carousel_img8 %}" alt=""></li>
     </ul>
     <a id="prev" href="#">&#8810;</a>
     <a id="next" href="#">&#8811;</a>

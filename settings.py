@@ -19,6 +19,16 @@ DEFAULT_SETTINGS: Dict[str, Any] = {
     # Relative path to logo for your site, used for brand on top left (must be present in static files)
     "site_logo": "vendor/adminlte/img/shivneri_logo.jpg",
     "site_logo2": "vendor/adminlte/img/workshop_katyar.jpg",
+
+    # Carousel images
+    "carousel_img1" : "vendor/adminlte/img/1.jpg",
+    "carousel_img2" : "vendor/adminlte/img/2.jpg",
+    "carousel_img3" : "vendor/adminlte/img/3.jpg",
+    "carousel_img4" : "vendor/adminlte/img/4.jpg",
+    "carousel_img5" : "vendor/adminlte/img/5.jpg",
+    "carousel_img6" : "vendor/adminlte/img/6.jpg",
+    "carousel_img7" : "vendor/adminlte/img/7.jpg",
+    "carousel_img8" : "vendor/adminlte/img/8.jpg",
     # CSS classes that are applied to the logo
     "site_logo_classes": "img-circle",
     # Relative path to a favicon for your site, will default to site_logo if absent (ideally 32x32 px)
