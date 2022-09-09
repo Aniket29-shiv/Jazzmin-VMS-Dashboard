@@ -48,7 +48,7 @@
 </head>
 <style>
   #slider {
-    position: fixed;
+    position: absolute;
     width: 900px;
     height: 465px;
     left: 60px;
@@ -100,42 +100,48 @@
   #slider #next {
     right: 10px;
   }
+
+  .row {
+    width: 100% !important;
+    text-align: center;
+  }
 </style>
-<body class="hold-transition jazzmin-login-page">
-
-<div style="position: fixed; top: 30px;">
-    <h2><strong>Shivneri Preventive Maintenance System</strong></h2>
-</div>
-
-<div id="slider">
-    <ul id="slideWrap"> 
-        <li><img src="{% static jazzmin_settings.carousel_img1 %}" alt=""></li>
-        <li><img src="{% static jazzmin_settings.carousel_img2 %}" alt=""></li>
-        <li><img src="{% static jazzmin_settings.carousel_img3 %}" alt=""></li>
-        <li><img src="{% static jazzmin_settings.carousel_img4 %}" alt=""></li>
-        <li><img src="{% static jazzmin_settings.carousel_img5 %}" alt=""></li>
-        <li><img src="{% static jazzmin_settings.carousel_img6 %}" alt=""></li>
-        <li><img src="{% static jazzmin_settings.carousel_img7 %}" alt=""></li>
-        <li><img src="{% static jazzmin_settings.carousel_img8 %}" alt=""></li>
-    </ul>
-    <a id="prev" href="#">&#8810;</a>
-    <a id="next" href="#">&#8811;</a>
-</div>
-
-    
-<div class="login-box" style="position: fixed; right: 80px;">
-    <div class="login-logo">
-        <img class="align-left" src="{% static jazzmin_settings.site_logo %}" alt="{{ jazzmin_settings.site_header }}">
-        <img class="align-right" src="{% static jazzmin_settings.site_logo2 %}" alt="{{ jazzmin_settings.site_header }}">
-    </div>
-
-    <div class="card">
-        <div class="card-body">
-            {% block content %} {% endblock %}
+<body class="hold-transition">
+    <div class="row mt-5">
+      <div class="col-8 text-center">
+        <div class="login-logo" style="justify-content:space-around;">
+          
+          <img src="{% static jazzmin_settings.site_logo %}" alt="{{ jazzmin_settings.site_header }}">
+          <h3><strong>Shivneri Preventive Maintenance System</strong></h3>
+          <img src="{% static jazzmin_settings.site_logo2 %}" alt="{{ jazzmin_settings.site_header }}">
         </div>
-    </div>
-</div>
+        <h2 class="pb-3 mt-3">330 INFANTRY BRIGADE</h2>
+        <div class="text-center">
+        <div id="slider">
+            <ul id="slideWrap"> 
+                <li><img src="{% static jazzmin_settings.carousel_img1 %}" alt=""></li>
+                <li><img src="{% static jazzmin_settings.carousel_img2 %}" alt=""></li>
+                <li><img src="{% static jazzmin_settings.carousel_img3 %}" alt=""></li>
+                <li><img src="{% static jazzmin_settings.carousel_img4 %}" alt=""></li>
+                <li><img src="{% static jazzmin_settings.carousel_img5 %}" alt=""></li>
+                <li><img src="{% static jazzmin_settings.carousel_img6 %}" alt=""></li>
+                <li><img src="{% static jazzmin_settings.carousel_img7 %}" alt=""></li>
+                <li><img src="{% static jazzmin_settings.carousel_img8 %}" alt=""></li>
+            </ul>
+            <a id="prev" href="#">&#8810;</a>
+            <a id="next" href="#">&#8811;</a>
+        </div>
+        </div>
+      </div>
 
+      <div class="login-box col-4" style="border-left: 1px solid #000">
+          <div class="card">
+              <div class="card-body">
+                  {% block content %} {% endblock %}
+              </div>
+          </div>
+      </div>
+    </div>
 <!-- jQuery -->
 <script src="{% static "admin/js/vendor/jquery/jquery.js" %}"></script>
 <!-- Bootstrap 4 -->

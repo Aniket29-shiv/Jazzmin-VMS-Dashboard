@@ -734,9 +734,11 @@ body.no-sidebar .main-header {
 }
 
 .login-box {
-    position: fixed;
-    right: 80px;
-
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    align-self: center;
 }
 .register-box {
     width: auto;
@@ -877,6 +879,19 @@ body.jazzmin-login-page {
 
 .align-right { float: right; }
 
+.main_class {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.col9 {
+    width: 70%;
+}
+
+.col3 {
+    width: 30%;
+}
 /* Slider carousel */
 
 

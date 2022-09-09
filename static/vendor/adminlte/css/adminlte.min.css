@@ -37791,7 +37791,15 @@ a.disabled.mailbox-attachment-close {
 }
 .login-logo {
   display: flex;
+  align-items: center;
 }
+
+.main_class {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .register-logo {
   font-size: 2.1rem;
   font-weight: 300;
