@@ -89,7 +89,7 @@
     const member_id = "{{ request.user.id }}"
     const member_email = "{{ request.user.email }}"
 
-    const Edit = (event, comment_id, comment, vehicle_status) => {
+    const Edit = (event, comment_id, comment) => {
         event.preventDefault();
 
         const card_header = document.getElementById(comment_id);
@@ -120,25 +120,7 @@
                                             <div class="help-block text-red"></div>
                                         </div>
                                     </div>
-                                </div>
-                                
-                                <div class="form-group field-vehicle_status">
-                                    <div class="row">
-                                        <label class="col-sm-2 text-left" for="vehicle_status_${comment_id}">
-                                            Vehicle status
-                                            <span class="text-red">* </span>
-                                        </label>
-                                        <div class="col-sm-10 field-vehicle_status">
-                                            <select id="vehicle_status_${comment_id}" class="form-control" value=${vehicle_status}>
-                                                <option value="SER">SER</option>
-                                                <option value="R1">R1</option>
-                                                <option value="R2">R2</option>
-                                                <option value="VOR">VOR</option>
-                                                <option value="Class V">Class V</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>                                    
+                                </div>                                 
                               `
 
         const edit_and_save = document.getElementById(`edit_and_save_${comment_id}`);
@@ -152,7 +134,6 @@
         const card_body = card_header.nextElementSibling;
 
         const comment = document.getElementById(`comment_${comment_id}`).value;
-        const vehicle_status = document.getElementById(`vehicle_status_${comment_id}`).value;
 
         card_body.innerHTML = `<div class="form-group field-comment">
                                     <div class="row">
@@ -178,25 +159,11 @@
                                             <div class="help-block text-red"></div>
                                         </div>
                                     </div>
-                                </div>
-                                
-                                <div class="form-group field-vehicle_status">
-                                    <div class="row">
-                                        <label class="col-sm-2 text-left" for="id_vehicle_status">
-                                            Vehicle status
-                                        </label>
-
-                                        <div class="col-sm-10 field-vehicle_status">
-                                            <div class="readonly">${vehicle_status}</div>
-                                            <div class="help-block red"></div>
-                                            <div class="help-block text-red"></div>
-                                        </div>
-                                    </div>
-                                </div>            
+                                </div>           
                               `
 
         const edit_and_save = document.getElementById(`edit_and_save_${comment_id}`);
-        edit_and_save.innerHTML = `<a onclick="Edit(event, ${comment_id}, '${comment}', '${vehicle_status}');" class="inline-edit">Edit</a>`;
+        edit_and_save.innerHTML = `<a onclick="Edit(event, ${comment_id}, '${comment}');" class="inline-edit">Edit</a>`;
                     
         const response = await fetch("/vehicle/comment/change/", {
             method: 'POST',
@@ -207,8 +174,7 @@
             },
             body: JSON.stringify({
                 comment_id: comment_id,
-                comment: comment,
-                vehicle_status: vehicle_status,
+                comment: comment
             }),
         }); 
     }
