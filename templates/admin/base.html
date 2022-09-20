@@ -434,71 +434,28 @@
 
 <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 <script>
-    setTimeout(() => {
-        var chart = new CanvasJS.Chart("chartContainer1", {
-            animationEnabled: true,
-            title:{
-                text: "Vehicle Nomenclature Status"
-            },	
-            axisY: {
-                title: "Count",
-                titleFontColor: "#4F81BC",
-                lineColor: "#4F81BC",
-                labelFontColor: "#4F81BC",
-                tickColor: "#4F81BC"
-            },
-          
-            toolTip: {
-                shared: true
-            },
-            legend: {
-                cursor:"pointer",
-                itemclick: toggleDataSeries
-            },
-            data: [{
-                type: "column",
-                name: "Quantity Authorized",
-                legendText: "Quantity Authorized",
-                showInLegend: true, 
-                dataPoints:[
-                    { label: "Saudi", y: 266.21 },
-                    { label: "Venezuela", y: 302.25 },
-                    { label: "Iran", y: 157.20 },
-                    { label: "Iraq", y: 148.77 },
-                    { label: "Kuwait", y: 101.50 },
-                    { label: "UAE", y: 97.8 }
-                ]
-            },
-            {
-                type: "column",	
-                name: "Quantity held",
-                legendText: "Quantity held",
-                axisYType: "secondary",
-                showInLegend: true,
-                dataPoints:[
-                    { label: "Saudi", y: 10.46 },
-                    { label: "Venezuela", y: 2.27 },
-                    { label: "Iran", y: 3.99 },
-                    { label: "Iraq", y: 4.45 },
-                    { label: "Kuwait", y: 2.92 },
-                    { label: "UAE", y: 3.1 }
-                ]
-            }]
-        });
-        chart.render();
-        
-        function toggleDataSeries(e) {
-            if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-                e.dataSeries.visible = false;
-            }
-            else {
-                e.dataSeries.visible = true;
-            }
-            chart.render();
+   Coluoum_first=[]
+   Coluoum_second=[]
+    const fetch_count = async () => {
+        const res = await fetch(`../vehicle/vehiclenomenclaturecount/`);
+        const category = (await res.json());
+        nomenclature_obj = (category.nomenclature);
+        qty_auth_obj = (category.qty_auth);
+        qty_held_obj = (category.qty_held);
+        let i=0;
+        while (i < 4) {
+            Coluoum_first.push({label:nomenclature_obj[i],y:qty_auth_obj[i]})
+            Coluoum_second.push({label:nomenclature_obj[i],y:qty_held_obj[i]})
+            console.log(nomenclature_obj[i]);
+            console.log(qty_auth_obj[i]);
+            console.log(qty_held_obj[i]);
+            i++;
         }
-        
-    }, 2000);
-
+      
+    }
+    
+   
+ 
 
     a = 75;
     b = 20;
@@ -513,6 +470,7 @@
         console.log(a)
         console.log(b);
         console.log(c);
+        console.log(10)
     }
     
     window.onload = function () {
@@ -545,6 +503,59 @@ setTimeout(() => {
     chart.render();
     console.log("In chart "+a);
 }, 2000);
+
+fetch_count()
+        
+    
+        setTimeout(() => {
+            var chart = new CanvasJS.Chart("chartContainer1", {
+                animationEnabled: true,
+                title:{
+                    text: "Vehicle Nomenclature Status"
+                },	
+                axisY: {
+                    title: "Count",
+                    titleFontColor: "#4F81BC",
+                    lineColor: "#4F81BC",
+                    labelFontColor: "#4F81BC",
+                    tickColor: "#4F81BC"
+                },
+              
+                toolTip: {
+                    shared: true
+                },
+                legend: {
+                    cursor:"pointer",
+                    itemclick: toggleDataSeries
+                },
+                data: [{
+                    type: "column",
+                    name: "Quantity Authorized",
+                    legendText: "Quantity Authorized",
+                    showInLegend: true, 
+                    dataPoints:Coluoum_first
+                },
+                {
+                    type: "column",	
+                    name: "Quantity held",
+                    legendText: "Quantity held",
+                    showInLegend: true,
+                    dataPoints:Coluoum_second
+                }]
+            });
+            chart.render();
+            
+            function toggleDataSeries(e) {
+                if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                    e.dataSeries.visible = false;
+                }
+                else {
+                    e.dataSeries.visible = true;
+                }
+                chart.render();
+            }
+            
+        }, 2000);
 }
     
     
