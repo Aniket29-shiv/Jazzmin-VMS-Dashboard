@@ -643,9 +643,8 @@ fetch_count()
                         const comment = inputs[0];
                         const member = selects[0];
                         const member_email = member.querySelector(`[value="${member.value}"]`).innerHTML;
-                        const vehicle_status = selects[1];
-        
-                        if (comment.value.length == 0 || member.value.length == 0 || vehicle_status.value.length == 0) {
+
+                        if (comment.value.length == 0 || member.value.length == 0) {
                             alert("Please Enter Valid Data!");
                         } else {
                             const response = await fetch("/vehicle/comment/", {
@@ -658,8 +657,7 @@ fetch_count()
                                 body: JSON.stringify({
                                     vehicle_id: vehicle_id, 
                                     comment: comment.value,
-                                    member: member.value,
-                                    vehicle_status: vehicle_status.value
+                                    member: member.value
                                 }),
                             });
 
@@ -699,19 +697,6 @@ fetch_count()
                                                                     <div class="readonly"><a href="/admin/Vehicle/member/${member.value}/change/">${member_email}</a></div>
                                                                     <div class="help-block red"></div>
                                                                     <div class="help-block text-red"></div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    
-                                                        <div class="form-group field-vehicle_status">
-                                                            <div class="row">
-                                                                <label class="col-sm-2 text-left" for="id_vehicle_status">
-                                                                    Vehicle status  
-                                                                </label>
-                                                                <div class="col-sm-10 field-vehicle_status">
-                                                                    <div class="readonly">${vehicle_status.value}</div>
-                                                                    <div class="help-block red">  </div>
-                                                                    <div class="help-block text-red"> </div>
                                                                 </div>
                                                             </div>
                                                         </div>
