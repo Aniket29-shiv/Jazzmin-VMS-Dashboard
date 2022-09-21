@@ -522,8 +522,8 @@ setTimeout(() => {
                 }, },
                 { y: c,  label: "Lapse", click: function(d) {
                     fetch_lapse_list();
-                }, },
-                
+                    window.location.replace("http://127.0.0.1:8000/admin/Vehicle/vehicle/?due_date__gte=2022-01-01&q=");
+                },},
             ]
         }]
     });
