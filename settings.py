@@ -15,7 +15,7 @@ DEFAULT_SETTINGS: Dict[str, Any] = {
     # Title on the login screen (19 chars max) (will default to current_admin_site.site_header)
     "site_header": "Shivneri Preventive Maintenance System",
     # Title on the brand (19 chars max) (will default to current_admin_site.site_header)
-    "site_brand": "Shivneri VMS",
+    "site_brand": "Shivneri PMS",
     # Relative path to logo for your site, used for brand on top left (must be present in static files)
     "site_logo": "vendor/adminlte/img/shivneri_logo.jpg",
     "site_logo2": "vendor/adminlte/img/workshop_katyar.jpg",
@@ -32,7 +32,7 @@ DEFAULT_SETTINGS: Dict[str, Any] = {
     # CSS classes that are applied to the logo
     "site_logo_classes": "img-circle",
     # Relative path to a favicon for your site, will default to site_logo if absent (ideally 32x32 px)
-    "site_icon": None,
+    "site_icon": "vendor/adminlte/img/workshop_katyar.jpg",
     # Welcome text on the login screen
     "welcome_sign": "JEET NISCHAY",
     # Copyright on the footer

@@ -128,7 +128,7 @@
                 {% else %}
                     <li class="nav-item">
                         <a href="{% url 'admin:index' %}" class="brand-link">
-                            <img src="{% static jazzmin_settings.site_logo %}" alt="{{ jazzmin_settings.site_header }} Logo" class="{{ jazzmin_settings.site_logo_classes }} brand-image" style="opacity: .8; margin: 0 0 0 5px; height: 40%">
+                            <img src="{% static jazzmin_settings.site_logo2 %}" alt="{{ jazzmin_settings.site_header }} Logo" class="{{ jazzmin_settings.site_logo_classes }} brand-image" style="opacity: .8; margin: 0 0 0 5px; height: 40%">
                         </a>
                     </li>
                 {% endif %}
@@ -262,7 +262,7 @@
 
             <aside class="main-sidebar elevation-4 {{ jazzmin_ui.sidebar_classes }}" id="jazzy-sidebar">
                 <a href="{% url 'admin:index' %}" class="brand-link {{ jazzmin_ui.brand_classes }}" id="jazzy-logo">
-                    <img src="{% static jazzmin_settings.site_logo %}" alt="{{ jazzmin_settings.site_header }} Logo" class="{{ jazzmin_settings.site_logo_classes }} brand-image elevation-3" style="opacity: .8">
+                    <img src="{% static jazzmin_settings.site_logo2 %}" alt="{{ jazzmin_settings.site_header }} Logo" class="{{ jazzmin_settings.site_logo_classes }} brand-image elevation-3" style="opacity: .8">
                     <span class="brand-text font-weight-light">{{ jazzmin_settings.site_brand }}</span>
                 </a>
 
@@ -482,7 +482,7 @@ setTimeout(() => {
         animationEnabled: true,
         theme: "light2", // "light1", "light2", "dark1", "dark2"
         title:{
-            text: "VMS Graphics"
+            text: "PMS Analytics"
         },
         axisY: {
             title: "Number of Vehicles"
@@ -493,15 +493,22 @@ setTimeout(() => {
             legendMarkerColor: "grey",
             legendText: "",
             dataPoints: [      
-                { y: a, label: "Complete" },
-                { y: b,  label: "Near_due" },
-                { y: c,  label: "Lapse" },
+                { y: a, label: "Complete", click: function(d) {
+                    alert("Complete");
+                },},
+                { y: b,  label: "Near_due", click: function() {
+                    window.location.replace("http://127.0.0.1:8000/admin/Vehicle/vehicle/?due_date__gte=2022-09-01&q=");
+                }, },
+                { y: c,  label: "Lapse", click: function(d) {
+                    alert("Lapse");
+                }, },
                 
             ]
         }]
     });
     chart.render();
     console.log("In chart "+a);
+
 }, 2000);
 
 fetch_count()
