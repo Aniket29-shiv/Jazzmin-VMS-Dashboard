@@ -733,7 +733,13 @@ body.no-sidebar .main-header {
     margin-top: 5px;
 }
 
-.login-box,
+.login-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    align-self: center;
+}
 .register-box {
     width: auto;
     max-width: 700px;
@@ -868,6 +874,26 @@ body.jazzmin-login-page {
 .callout {
     color: black;
 }
+
+.align-left { float: left; }
+
+.align-right { float: right; }
+
+.main_class {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.col9 {
+    width: 70%;
+}
+
+.col3 {
+    width: 30%;
+}
+/* Slider carousel */
+
 
 /* sidebar scrolling */
 .layout-fixed #jazzy-sidebar {
